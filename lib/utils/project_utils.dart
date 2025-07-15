@@ -13,13 +13,33 @@ class ProjectUtils {
       required this.subtitle,
       this.androidLink,
       this.iosLink,
-      required this.webLink,
-      required this.githubLink});
+      this.webLink,
+      this.githubLink});
 }
 
 // ###############
 // HOBBY PROJECTS
 List<ProjectUtils> hobbyProjectUtils = [
+  ProjectUtils(
+    image: 'assets/projects/masadari.jpg',
+    title: 'Masadari',
+    subtitle:
+        'Mosaderi: An LMS-like app for teachers, students, and parents to buy/sell digital educational resources securely.',
+    iosLink: 'https://apps.apple.com/us/app/masadri/id6741678339',
+  ),
+  ProjectUtils(
+      image: 'assets/projects/mekor_habracha.png',
+      title: 'Mekor HaBracha',
+      subtitle:
+          'Mekor HaBracha is a free app created to help Klal Yisroel protect and honor the sanctity of Shabbos Kodesh and Yom Tov',
+      androidLink:
+          'https://play.google.com/store/apps/details?id=com.etzchaimkollel.mekorhabracha&pcampaignid=web_share'),
+  ProjectUtils(
+      image: 'assets/projects/sellyourstrips.png',
+      title: 'Sell Your Strips',
+      subtitle: 'Sell Your Unused Diabetic Supplies for Fast Cash!',
+      androidLink:
+          'https://play.google.com/store/apps/details?id=com.etzchaimkollel.mekorhabracha&pcampaignid=web_share'),
   ProjectUtils(
       image: 'assets/projects/01.png',
       title: 'Photo Gallery',

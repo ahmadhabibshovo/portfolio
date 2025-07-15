@@ -94,35 +94,37 @@ class ProjectCardWidget extends StatelessWidget {
                           js.context.callMethod("open", [project.androidLink]);
                         },
                         child: Image.asset(
-                          "assets/android_icon.png",
+                          "assets/play.png",
                           width: 17,
                         ),
                       ),
                     ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6),
-                    child: InkWell(
-                      onTap: () {
-                        js.context.callMethod("open", [project.githubLink]);
-                      },
-                      child: Image.asset(
-                        "assets/github.png",
-                        width: 17,
+                  if (project.githubLink != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: InkWell(
+                        onTap: () {
+                          js.context.callMethod("open", [project.githubLink]);
+                        },
+                        child: Image.asset(
+                          "assets/github.png",
+                          width: 17,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6),
-                    child: InkWell(
-                      onTap: () {
-                        js.context.callMethod("open", [project.webLink]);
-                      },
-                      child: Image.asset(
-                        "assets/web_icon.png",
-                        width: 17,
+                  if (project.webLink != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: InkWell(
+                        onTap: () {
+                          js.context.callMethod("open", [project.webLink]);
+                        },
+                        child: Image.asset(
+                          "assets/web_icon.png",
+                          width: 17,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             )
