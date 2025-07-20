@@ -3,6 +3,8 @@ class ProjectUtils {
   final String title;
   final String subtitle;
   final String? androidLink;
+  final String? playStoreLink;
+
   final String? githubLink;
   final String? iosLink;
   final String? webLink;
@@ -11,6 +13,7 @@ class ProjectUtils {
       {required this.image,
       required this.title,
       required this.subtitle,
+      this.playStoreLink,
       this.androidLink,
       this.iosLink,
       this.webLink,
@@ -28,18 +31,40 @@ List<ProjectUtils> hobbyProjectUtils = [
     iosLink: 'https://apps.apple.com/us/app/masadri/id6741678339',
   ),
   ProjectUtils(
+      image: 'assets/projects/ayos.png',
+      title: 'Ayos',
+      subtitle:
+          'Ayos: Connects you with trusted local pros for fast, affordable, and top-notch home repair services.',
+      playStoreLink:
+          'https://play.google.com/store/apps/details?id=com.ayos.app&pcampaignid=web_share'),
+  ProjectUtils(
       image: 'assets/projects/mekor_habracha.png',
       title: 'Mekor HaBracha',
       subtitle:
           'Mekor HaBracha is a free app created to help Klal Yisroel protect and honor the sanctity of Shabbos Kodesh and Yom Tov',
-      androidLink:
+      playStoreLink:
           'https://play.google.com/store/apps/details?id=com.etzchaimkollel.mekorhabracha&pcampaignid=web_share'),
   ProjectUtils(
-      image: 'assets/projects/sellyourstrips.png',
+      image: 'assets/projects/timberNet.png',
+      title: 'timberNet',
+      subtitle:
+          'lets users manage wood piles, contacts, entries, locations, images, and business workflows on mobile.',
+      androidLink:
+          'https://drive.google.com/drive/folders/1jII3XxiVKWKdpJABZ9IAqIrNi-LFETLl?usp=sharing'),
+  ProjectUtils(
+      image: 'assets/projects/sellyourstripe.png',
       title: 'Sell Your Strips',
       subtitle: 'Sell Your Unused Diabetic Supplies for Fast Cash!',
       androidLink:
-          'https://play.google.com/store/apps/details?id=com.etzchaimkollel.mekorhabracha&pcampaignid=web_share'),
+          'https://drive.google.com/drive/folders/197hIncmOSJy-JswdaP0btZQFP6WxuI8Z?usp=drive_link'),
+  ProjectUtils(
+    image: 'assets/projects/charity.png',
+    title: 'Charity',
+    subtitle:
+        'A Kiosk App to Donate to charity using  Card Payment Apple Pay and Google Pay',
+    // androidLink:
+    // 'https://drive.google.com/drive/folders/1jII3XxiVKWKdpJABZ9IAqIrNi-LFETLl?usp=sharing',
+  ),
   ProjectUtils(
       image: 'assets/projects/01.png',
       title: 'Photo Gallery',
