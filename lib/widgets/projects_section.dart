@@ -42,7 +42,7 @@ class ProjectsSection extends StatelessWidget {
           const SizedBox(height: 80),
           // Hobby projects title
           const Text(
-            "Hobby projects",
+            "Projects",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
