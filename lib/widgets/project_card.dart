@@ -19,7 +19,7 @@ class ProjectCardWidget extends StatelessWidget {
       },
       child: Container(
         clipBehavior: Clip.antiAlias,
-        height: 290,
+        height: 320,
         width: 260,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -39,12 +39,43 @@ class ProjectCardWidget extends StatelessWidget {
             // title
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 15, 12, 12),
-              child: Text(
-                project.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: CustomColor.whitePrimary,
-                ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      project.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: CustomColor.whitePrimary,
+                      ),
+                    ),
+                  ),
+                  if (project.iosLink != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: InkWell(
+                        onTap: () {
+                          js.context.callMethod("open", [project.iosLink]);
+                        },
+                        child: Image.asset(
+                          "assets/get_ios.png",
+                          width: 100,
+                          height: 40,
+                        ),
+                      ),
+                    ),
+                  if (project.playStoreLink != null)
+                    InkWell(
+                      onTap: () {
+                        js.context.callMethod("open", [project.playStoreLink]);
+                      },
+                      child: Image.asset(
+                        "assets/get_play.png",
+                        width: 100,
+                        height: 40,
+                      ),
+                    ),
+                ],
               ),
             ),
             // subtitle
@@ -92,6 +123,20 @@ class ProjectCardWidget extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           js.context.callMethod("open", [project.androidLink]);
+                        },
+                        child: Image.asset(
+                          "assets/android_icon.png",
+                          width: 17,
+                        ),
+                      ),
+                    ),
+                  if (project.playStoreLink != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: InkWell(
+                        onTap: () {
+                          js.context
+                              .callMethod("open", [project.playStoreLink]);
                         },
                         child: Image.asset(
                           "assets/play.png",
