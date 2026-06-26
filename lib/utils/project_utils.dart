@@ -127,7 +127,7 @@ List<ProjectUtils> workProjectUtils = [
     subtitle:
         'Centralized delivery and driver operations dashboard for restaurants, featuring real-time tracking, weekly scheduling, driver coordination, and role-based access control.',
     androidLink: 'https://play.google.com/store/apps/details?id=io.drivetime.app&pcampaignid=web_share',
-    iosLink: 'https://apps.apple.com/us/app/developer/ibrahim-cheikh/id1895712407',
+    iosLink: 'https://apps.apple.com/za/app/drivetime-io/id6764275003',
   ),
   ProjectUtils(
     image: 'assets/projects/masadari.png',
