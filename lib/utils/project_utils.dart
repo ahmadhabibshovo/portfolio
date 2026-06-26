@@ -110,7 +110,7 @@ List<ProjectUtils> workProjectUtils = [
     image: 'assets/projects/frapp.png',
     title: 'Frapp',
     subtitle:
-        'Community social network app for creators & students to showcase talent, live stream, and access workshops.',
+        'All-in-one community platform connecting creators, students, and learners for personal branding, mentorship, project collaboration, and exclusive educational content.',
     iosLink: 'https://apps.apple.com/us/app/frapp-discover-connect-grow/id6759274038',
   ),
   ProjectUtils(
@@ -125,7 +125,7 @@ List<ProjectUtils> workProjectUtils = [
     image: 'assets/projects/drivetime.png',
     title: 'DriveTime',
     subtitle:
-        'Specialized tracking application focused on real-time driving metrics and user engagement.',
+        'Centralized delivery and driver operations dashboard for restaurants, featuring real-time tracking, weekly scheduling, driver coordination, and role-based access control.',
     androidLink: 'https://play.google.com/store/apps/details?id=io.drivetime.app&pcampaignid=web_share',
     iosLink: 'https://apps.apple.com/us/app/developer/ibrahim-cheikh/id1895712407',
   ),
