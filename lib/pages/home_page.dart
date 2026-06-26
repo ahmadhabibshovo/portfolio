@@ -61,9 +61,9 @@ class _HomePageState extends State<HomePage> {
                 ),
 
               if (constraints.maxWidth >= kMinDesktopWidth)
-                MainDesktop()
+                MainDesktop(onContactTap: () => scrollToSection(3))
               else
-                MainMobile(),
+                MainMobile(onContactTap: () => scrollToSection(3)),
 
               // SKILLS
               Container(

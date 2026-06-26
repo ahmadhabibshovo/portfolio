@@ -18,26 +18,43 @@ class SkillsDesktop extends StatelessWidget {
             maxWidth: 450,
           ),
           child: Wrap(
-            spacing: 5.0,
-            runSpacing: 5.0,
+            spacing: 15.0,
+            runSpacing: 15.0,
             children: [
               for (int i = 0; i < platformItems.length; i++)
                 Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: CustomColor.bgLight2,
-                    borderRadius: BorderRadius.circular(5),
+                    color: CustomColor.bgLight2.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.06),
+                      width: 1.2,
+                    ),
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20.0,
                       vertical: 10.0,
                     ),
-                    leading: Image.asset(
-                      platformItems[i]["img"],
-                      width: 26.0,
+                    leading: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(
+                        platformItems[i]["img"],
+                        width: 26.0,
+                      ),
                     ),
-                    title: Text(platformItems[i]["title"]),
+                    title: Text(
+                      platformItems[i]["title"],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 )
             ],
@@ -52,18 +69,48 @@ class SkillsDesktop extends StatelessWidget {
               maxWidth: 500,
             ),
             child: Wrap(
-              spacing: 10.0,
-              runSpacing: 10.0,
+              spacing: 12.0,
+              runSpacing: 12.0,
               children: [
                 for (int i = 0; i < skillItems.length; i++)
-                  Chip(
+                  Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 12.0,
+                      vertical: 10.0,
                       horizontal: 16.0,
                     ),
-                    backgroundColor: CustomColor.bgLight2,
-                    label: Text(skillItems[i]["title"]),
-                    avatar: Image.asset(skillItems[i]["img"]),
+                    decoration: BoxDecoration(
+                      color: CustomColor.bgLight2.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: CustomColor.yellowPrimary.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (skillItems[i]["img"] != null)
+                          Image.asset(
+                            skillItems[i]["img"],
+                            width: 24,
+                            height: 24,
+                          )
+                        else
+                          const Icon(
+                            Icons.code,
+                            color: CustomColor.yellowPrimary,
+                            size: 18,
+                          ),
+                        const SizedBox(width: 10),
+                        Text(
+                          skillItems[i]["title"],
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),

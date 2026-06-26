@@ -12,41 +12,75 @@ class ProjectsSection extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     return Container(
       width: screenWidth,
-      padding: const EdgeInsets.fromLTRB(25, 20, 25, 60),
+      padding: const EdgeInsets.fromLTRB(25, 40, 25, 60),
       child: Column(
         children: [
           // Work projects title
-          // const Text(
-          //   "Work projects",
-          //   style: TextStyle(
-          //     fontSize: 24,
-          //     fontWeight: FontWeight.bold,
-          //     color: CustomColor.whitePrimary,
-          //   ),
-          // ),
-          // const SizedBox(height: 50),
-          // Work projects cards
-          // ConstrainedBox(
-          //   constraints: const BoxConstraints(maxWidth: 900),
-          //   child: Wrap(
-          //     spacing: 25,
-          //     runSpacing: 25,
-          //     children: [
-          //       for (int i = 0; i < workProjectUtils.length; i++)
-          //         ProjectCardWidget(
-          //           project: workProjectUtils[i],
-          //         ),
-          //     ],
-          //   ),
-          // ),
-          const SizedBox(height: 80),
-          // Hobby projects title
           const Text(
-            "Hobby projects",
+            "Key Production Projects",
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: CustomColor.whitePrimary,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Gradient underline
+          Container(
+            height: 3,
+            width: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2),
+              gradient: const LinearGradient(
+                colors: [
+                  CustomColor.yellowSecondary,
+                  CustomColor.yellowPrimary,
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 50),
+          // Work projects cards
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: Wrap(
+              spacing: 30,
+              runSpacing: 30,
+              alignment: WrapAlignment.center,
+              children: [
+                for (int i = 0; i < workProjectUtils.length; i++)
+                  ProjectCardWidget(
+                    project: workProjectUtils[i],
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 80),
+
+          // Hobby projects title
+          const Text(
+            "Hobby Projects",
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: CustomColor.whitePrimary,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Gradient underline
+          Container(
+            height: 3,
+            width: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2),
+              gradient: const LinearGradient(
+                colors: [
+                  CustomColor.yellowSecondary,
+                  CustomColor.yellowPrimary,
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 50),
@@ -54,8 +88,9 @@ class ProjectsSection extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 900),
             child: Wrap(
-              spacing: 25,
-              runSpacing: 25,
+              spacing: 30,
+              runSpacing: 30,
+              alignment: WrapAlignment.center,
               children: [
                 for (int i = 0; i < hobbyProjectUtils.length; i++)
                   ProjectCardWidget(
@@ -69,3 +104,4 @@ class ProjectsSection extends StatelessWidget {
     );
   }
 }
+

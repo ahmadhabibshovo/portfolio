@@ -17,9 +17,9 @@ class SiteLogo extends StatelessWidget {
       child: const Text(
         "Ahmad Habib",
         style: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          decoration: TextDecoration.underline,
+          fontSize: 20,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
           color: CustomColor.yellowSecondary,
         ),
       ),

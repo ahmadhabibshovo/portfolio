@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 
 BoxDecoration kHederDecoration = BoxDecoration(
-  gradient: const LinearGradient(
-    colors: [
-      Colors.transparent,
-      CustomColor.bgLight1,
-    ],
+  color: CustomColor.bgLight1.withValues(alpha: 0.5),
+  borderRadius: BorderRadius.circular(20),
+  border: Border.all(
+    color: Colors.white.withValues(alpha: 0.07),
+    width: 1.2,
   ),
-  borderRadius: BorderRadius.circular(100),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.2),
+      blurRadius: 20,
+      offset: const Offset(0, 8),
+    ),
+  ],
 );
