@@ -12,6 +12,7 @@ import '../widgets/experience_section.dart';
 import '../widgets/footer_section.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/nav_bar.dart';
+import '../widgets/portfolio_skeleton.dart';
 import '../widgets/projects_section.dart';
 import '../widgets/skills_section.dart';
 
@@ -66,25 +67,11 @@ class _PortfolioPageState extends State<PortfolioPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: BlocBuilder<PortfolioBloc, PortfolioState>(
         builder: (context, state) {
           if (state is PortfolioLoading) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primary),
-                  SizedBox(height: 18),
-                  Text(
-                    'Loading Portfolio & Connect to Backend...',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return const PortfolioSkeleton();
           }
 
           if (state is PortfolioError) {
@@ -127,87 +114,111 @@ class _PortfolioPageState extends State<PortfolioPage> {
           }
 
           if (state is PortfolioLoaded) {
-            return SafeArea(
-              child: Column(
-                children: [
-                  // Top Navigation Bar
-                  NavBar(
-                    onAboutTap: () => _scrollToKey(_aboutKey),
-                    onSkillsTap: () => _scrollToKey(_skillsKey),
-                    onProjectsTap: () => _scrollToKey(_projectsKey),
-                    onBooksTap: () => _scrollToKey(_booksKey),
-                    onExperienceTap: () => _scrollToKey(_experienceKey),
-                    onContactTap: () => _scrollToKey(_contactKey),
-                    socialLinks: state.socialLinks,
-                  ),
+            return Stack(
+              children: [
+                SafeArea(
+                  child: Column(
+                    children: [
+                      // Top Navigation Bar
+                      NavBar(
+                        onAboutTap: () => _scrollToKey(_aboutKey),
+                        onSkillsTap: () => _scrollToKey(_skillsKey),
+                        onProjectsTap: () => _scrollToKey(_projectsKey),
+                        onBooksTap: () => _scrollToKey(_booksKey),
+                        onExperienceTap: () => _scrollToKey(_experienceKey),
+                        onContactTap: () => _scrollToKey(_contactKey),
+                        socialLinks: state.socialLinks,
+                      ),
 
-                  // Main Scrollable Body
-                  Expanded(
-                    child: SelectionArea(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1280),
-                            child: Column(
-                              children: [
-                                KeyedSubtree(
-                                  key: _heroKey,
-                                  child: HeroSection(
-                                    profile: state.profile,
-                                    socialLinks: state.socialLinks,
-                                    onProjectsTap: () =>
-                                        _scrollToKey(_projectsKey),
-                                    onContactTap: () =>
-                                        _scrollToKey(_contactKey),
-                                  ),
+                      // Main Scrollable Body
+                      Expanded(
+                        child: SelectionArea(
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 1280),
+                                child: Column(
+                                  children: [
+                                    KeyedSubtree(
+                                      key: _heroKey,
+                                      child: HeroSection(
+                                        profile: state.profile,
+                                        socialLinks: state.socialLinks,
+                                        onProjectsTap: () =>
+                                            _scrollToKey(_projectsKey),
+                                        onContactTap: () =>
+                                            _scrollToKey(_contactKey),
+                                      ),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _aboutKey,
+                                      child: AboutSection(
+                                        profile: state.profile,
+                                        highlights: state.highlights,
+                                      ),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _skillsKey,
+                                      child: SkillsSection(skills: state.skills),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _projectsKey,
+                                      child: ProjectsSection(
+                                        projects: state.filteredProjects,
+                                        selectedCategory:
+                                            state.selectedCategory,
+                                      ),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _booksKey,
+                                      child: BooksSection(books: state.books),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _experienceKey,
+                                      child: ExperienceSection(
+                                        experiences: state.experiences,
+                                      ),
+                                    ),
+                                    KeyedSubtree(
+                                      key: _contactKey,
+                                      child:
+                                          ContactSection(profile: state.profile),
+                                    ),
+                                    FooterSection(
+                                      profile: state.profile,
+                                      socialLinks: state.socialLinks,
+                                      onScrollToTop: _scrollToTop,
+                                    ),
+                                  ],
                                 ),
-                                KeyedSubtree(
-                                  key: _aboutKey,
-                                  child: AboutSection(
-                                    profile: state.profile,
-                                    highlights: state.highlights,
-                                  ),
-                                ),
-                                KeyedSubtree(
-                                  key: _skillsKey,
-                                  child: SkillsSection(skills: state.skills),
-                                ),
-                                KeyedSubtree(
-                                  key: _projectsKey,
-                                  child: ProjectsSection(
-                                    projects: state.filteredProjects,
-                                    selectedCategory: state.selectedCategory,
-                                  ),
-                                ),
-                                KeyedSubtree(
-                                  key: _booksKey,
-                                  child: BooksSection(books: state.books),
-                                ),
-                                KeyedSubtree(
-                                  key: _experienceKey,
-                                  child: ExperienceSection(
-                                    experiences: state.experiences,
-                                  ),
-                                ),
-                                KeyedSubtree(
-                                  key: _contactKey,
-                                  child: ContactSection(profile: state.profile),
-                                ),
-                                FooterSection(
-                                  profile: state.profile,
-                                  socialLinks: state.socialLinks,
-                                  onScrollToTop: _scrollToTop,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+
+                // Subtle top edge indicator while syncing in background
+                if (state.isSyncing)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: SizedBox(
+                      height: 2.5,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.primary,
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              ),
+              ],
             );
           }
 

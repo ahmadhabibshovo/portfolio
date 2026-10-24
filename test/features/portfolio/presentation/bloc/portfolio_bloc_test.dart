@@ -208,12 +208,13 @@ void main() {
     bloc.close();
   });
 
-  test('initial state should be PortfolioInitial', () {
-    expect(bloc.state, equals(PortfolioInitial()));
+  test('initial state should be PortfolioLoaded with instant data', () {
+    expect(bloc.state, isA<PortfolioLoaded>());
+    expect((bloc.state as PortfolioLoaded).profile.name, equals('Ahmad Habib'));
   });
 
-  test('FetchPortfolioDataEvent should emit PortfolioLoading and then PortfolioLoaded', () async {
-    final expectedStates = [isA<PortfolioLoading>(), isA<PortfolioLoaded>()];
+  test('FetchPortfolioDataEvent should emit PortfolioLoaded with syncing and fresh data', () async {
+    final expectedStates = [isA<PortfolioLoaded>()];
 
     expectLater(bloc.stream, emitsInOrder(expectedStates));
 

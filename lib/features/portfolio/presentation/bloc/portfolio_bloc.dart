@@ -1,7 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/utils/either.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/book_entity.dart';
+import '../../domain/entities/experience_entity.dart';
 import '../../domain/entities/highlight_entity.dart';
+import '../../domain/entities/profile_entity.dart';
+import '../../domain/entities/project_entity.dart';
+import '../../domain/entities/skill_entity.dart';
 import '../../domain/entities/social_link_entity.dart';
 import '../../domain/usecases/get_books_usecase.dart';
 import '../../domain/usecases/get_experiences_usecase.dart';
@@ -33,7 +39,7 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     required this.getBooksUseCase,
     required this.getHighlightsUseCase,
     required this.sendContactMessageUseCase,
-  }) : super(PortfolioInitial()) {
+  }) : super(PortfolioLoaded.initial(isSyncing: true)) {
     on<FetchPortfolioDataEvent>(_onFetchData);
     on<FilterProjectsByCategoryEvent>(_onFilterProjects);
     on<SubmitContactMessageEvent>(_onSubmitContact);
@@ -43,59 +49,80 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     FetchPortfolioDataEvent event,
     Emitter<PortfolioState> emit,
   ) async {
-    emit(PortfolioLoading());
+    // Keep existing data visible and mark syncing
+    if (state is PortfolioLoaded) {
+      emit((state as PortfolioLoaded).copyWith(isSyncing: true));
+    } else {
+      emit(PortfolioLoaded.initial(isSyncing: true));
+    }
 
-    final profileRes = await getProfileUseCase();
-    final projectsRes = await getProjectsUseCase();
-    final skillsRes = await getSkillsUseCase();
-    final experiencesRes = await getExperiencesUseCase();
-    final linksRes = await getSocialLinksUseCase();
-    final booksRes = await getBooksUseCase();
-    final highlightsRes = await getHighlightsUseCase();
+    try {
+      // Parallel execution of all 7 endpoints
+      final results = await Future.wait([
+        getProfileUseCase(),
+        getProjectsUseCase(),
+        getSkillsUseCase(),
+        getExperiencesUseCase(),
+        getSocialLinksUseCase(),
+        getBooksUseCase(),
+        getHighlightsUseCase(),
+      ]);
 
-    profileRes.fold((failure) => emit(PortfolioError(failure.message)), (
-      profile,
-    ) {
-      projectsRes.fold((failure) => emit(PortfolioError(failure.message)), (
-        projects,
-      ) {
-        skillsRes.fold((failure) => emit(PortfolioError(failure.message)), (
-          skills,
-        ) {
-          experiencesRes.fold(
-            (failure) => emit(PortfolioError(failure.message)),
-            (experiences) {
-              final socialLinks = linksRes.fold<List<SocialLinkEntity>>(
-                (_) => [],
-                (links) => links,
-              );
-              final books = booksRes.fold<List<BookEntity>>(
-                (_) => [],
-                (b) => b,
-              );
-              final highlights = highlightsRes.fold<List<HighlightEntity>>(
-                (_) => [],
-                (h) => h,
-              );
+      final profileRes = results[0] as Either<Failure, ProfileEntity>;
+      final projectsRes = results[1] as Either<Failure, List<ProjectEntity>>;
+      final skillsRes = results[2] as Either<Failure, List<SkillEntity>>;
+      final experiencesRes = results[3] as Either<Failure, List<ExperienceEntity>>;
+      final linksRes = results[4] as Either<Failure, List<SocialLinkEntity>>;
+      final booksRes = results[5] as Either<Failure, List<BookEntity>>;
+      final highlightsRes = results[6] as Either<Failure, List<HighlightEntity>>;
 
-              emit(
-                PortfolioLoaded(
-                  profile: profile,
-                  allProjects: projects,
-                  filteredProjects: projects,
-                  skills: skills,
-                  experiences: experiences,
-                  socialLinks: socialLinks,
-                  books: books,
-                  highlights: highlights,
-                  selectedCategory: 'All',
-                ),
-              );
-            },
-          );
-        });
-      });
-    });
+      final currentState = state is PortfolioLoaded
+          ? (state as PortfolioLoaded)
+          : PortfolioLoaded.initial();
+
+      final profile = profileRes.fold((_) => currentState.profile, (p) => p);
+      final allProjects =
+          projectsRes.fold((_) => currentState.allProjects, (p) => p);
+      final skills = skillsRes.fold((_) => currentState.skills, (s) => s);
+      final experiences =
+          experiencesRes.fold((_) => currentState.experiences, (e) => e);
+      final socialLinks =
+          linksRes.fold((_) => currentState.socialLinks, (l) => l);
+      final books = booksRes.fold((_) => currentState.books, (b) => b);
+      final highlights =
+          highlightsRes.fold((_) => currentState.highlights, (h) => h);
+
+      final filteredProjects = currentState.selectedCategory == 'All'
+          ? allProjects
+          : allProjects
+              .where((p) => p.category.toLowerCase() ==
+                  currentState.selectedCategory.toLowerCase())
+              .toList();
+
+      emit(
+        PortfolioLoaded(
+          profile: profile,
+          allProjects: allProjects,
+          filteredProjects: filteredProjects,
+          skills: skills,
+          experiences: experiences,
+          socialLinks: socialLinks,
+          books: books,
+          highlights: highlights,
+          selectedCategory: currentState.selectedCategory,
+          contactStatus: currentState.contactStatus,
+          contactFeedback: currentState.contactFeedback,
+          isSyncing: false,
+        ),
+      );
+    } catch (e) {
+      // Fallback gracefully without breaking UI
+      if (state is PortfolioLoaded) {
+        emit((state as PortfolioLoaded).copyWith(isSyncing: false));
+      } else {
+        emit(PortfolioLoaded.initial(isSyncing: false));
+      }
+    }
   }
 
   void _onFilterProjects(
@@ -103,20 +130,19 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     Emitter<PortfolioState> emit,
   ) {
     if (state is PortfolioLoaded) {
-      final currentState = state as PortfolioLoaded;
-      final category = event.category;
-
-      final filtered = category == 'All'
-          ? currentState.allProjects
-          : currentState.allProjects
-                .where(
-                  (p) => p.category.toLowerCase() == category.toLowerCase(),
-                )
-                .toList();
+      final current = state as PortfolioLoaded;
+      final filtered = event.category == 'All'
+          ? current.allProjects
+          : current.allProjects
+              .where(
+                (p) =>
+                    p.category.toLowerCase() == event.category.toLowerCase(),
+              )
+              .toList();
 
       emit(
-        currentState.copyWith(
-          selectedCategory: category,
+        current.copyWith(
+          selectedCategory: event.category,
           filteredProjects: filtered,
         ),
       );
@@ -128,11 +154,11 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     Emitter<PortfolioState> emit,
   ) async {
     if (state is PortfolioLoaded) {
-      final currentState = state as PortfolioLoaded;
-
+      final current = state as PortfolioLoaded;
       emit(
-        currentState.copyWith(
+        current.copyWith(
           contactStatus: ContactSubmissionStatus.submitting,
+          contactFeedback: null,
         ),
       );
 
@@ -146,17 +172,17 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
       result.fold(
         (failure) {
           emit(
-            currentState.copyWith(
+            current.copyWith(
               contactStatus: ContactSubmissionStatus.failure,
               contactFeedback: failure.message,
             ),
           );
         },
-        (feedback) {
+        (successMsg) {
           emit(
-            currentState.copyWith(
+            current.copyWith(
               contactStatus: ContactSubmissionStatus.success,
-              contactFeedback: feedback,
+              contactFeedback: successMsg,
             ),
           );
         },

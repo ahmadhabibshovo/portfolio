@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../data/datasources/portfolio_initial_data.dart';
 import '../../domain/entities/book_entity.dart';
 import '../../domain/entities/experience_entity.dart';
 import '../../domain/entities/highlight_entity.dart';
@@ -33,6 +34,7 @@ class PortfolioLoaded extends PortfolioState {
   final String selectedCategory;
   final ContactSubmissionStatus contactStatus;
   final String? contactFeedback;
+  final bool isSyncing;
 
   const PortfolioLoaded({
     required this.profile,
@@ -46,7 +48,24 @@ class PortfolioLoaded extends PortfolioState {
     this.selectedCategory = 'All',
     this.contactStatus = ContactSubmissionStatus.initial,
     this.contactFeedback,
+    this.isSyncing = false,
   });
+
+  /// Factory for Instant 0ms Load with pre-seeded data
+  factory PortfolioLoaded.initial({bool isSyncing = false}) {
+    final projects = PortfolioInitialData.defaultProjects;
+    return PortfolioLoaded(
+      profile: PortfolioInitialData.defaultProfile,
+      allProjects: projects,
+      filteredProjects: projects,
+      skills: PortfolioInitialData.defaultSkills,
+      experiences: PortfolioInitialData.defaultExperiences,
+      socialLinks: PortfolioInitialData.defaultSocialLinks,
+      books: PortfolioInitialData.defaultBooks,
+      highlights: PortfolioInitialData.defaultHighlights,
+      isSyncing: isSyncing,
+    );
+  }
 
   PortfolioLoaded copyWith({
     ProfileEntity? profile,
@@ -60,6 +79,7 @@ class PortfolioLoaded extends PortfolioState {
     String? selectedCategory,
     ContactSubmissionStatus? contactStatus,
     String? contactFeedback,
+    bool? isSyncing,
   }) {
     return PortfolioLoaded(
       profile: profile ?? this.profile,
@@ -73,23 +93,25 @@ class PortfolioLoaded extends PortfolioState {
       selectedCategory: selectedCategory ?? this.selectedCategory,
       contactStatus: contactStatus ?? this.contactStatus,
       contactFeedback: contactFeedback,
+      isSyncing: isSyncing ?? this.isSyncing,
     );
   }
 
   @override
   List<Object?> get props => [
-    profile,
-    allProjects,
-    filteredProjects,
-    skills,
-    experiences,
-    socialLinks,
-    books,
-    highlights,
-    selectedCategory,
-    contactStatus,
-    contactFeedback,
-  ];
+        profile,
+        allProjects,
+        filteredProjects,
+        skills,
+        experiences,
+        socialLinks,
+        books,
+        highlights,
+        selectedCategory,
+        contactStatus,
+        contactFeedback,
+        isSyncing,
+      ];
 }
 
 class PortfolioError extends PortfolioState {
