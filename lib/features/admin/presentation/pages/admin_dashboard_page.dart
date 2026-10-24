@@ -81,6 +81,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
             ],
           ),
           actions: [
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+              icon: const Icon(Icons.open_in_browser_rounded, size: 18),
+              label: const Text(
+                'View Public Site',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+              },
+            ),
+            const SizedBox(width: 6),
             IconButton(
               icon: const Icon(Icons.refresh_rounded),
               tooltip: 'Refresh Data',
@@ -787,7 +802,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            'by ${b.author} | Status: ${b.status} | Rating: ${b.rating}★',
+                            'by ${b.author} | Status: ${b.status} | Rating: ${b.rating}â˜…',
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
