@@ -3,7 +3,7 @@ class AppConfig {
   // or set dynamically via AppConfig.setBaseUrl(...)
   static String _baseUrl = const String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8080/api/v1',
+    defaultValue: 'https://portfolio-backend-xuzn.onrender.com/api/v1',
   );
 
   static String get baseUrl => _baseUrl;
