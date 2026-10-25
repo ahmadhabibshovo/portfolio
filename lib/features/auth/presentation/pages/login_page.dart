@@ -17,10 +17,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(
-    text: 'ahmadhabibshovo@gmail.com',
-  );
-  final _passwordController = TextEditingController(text: 'AdminPassword123!');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
@@ -60,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
             );
             widget.onLoginSuccess();
           } else if (state is AuthFailureState) {
+            _passwordController.clear();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: AppColors.error,
@@ -132,13 +131,21 @@ class _LoginPageState extends State<LoginPage> {
                               labelText: 'Email Address',
                               prefixIcon: Icon(Icons.email_outlined, size: 20),
                             ),
-                            validator: (val) => (val == null || val.isEmpty)
-                                ? 'Email is required'
-                                : null,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return 'Email is required';
+                              }
+                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(val.trim())) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 18),
                           TextFormField(
                             controller: _passwordController,
+                            autocorrect: false,
+                            enableSuggestions: false,
                             obscureText: _obscurePassword,
                             decoration: InputDecoration(
                               labelText: 'Password',
@@ -160,9 +167,15 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                             ),
-                            validator: (val) => (val == null || val.isEmpty)
-                                ? 'Password is required'
-                                : null,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Password is required';
+                              }
+                              if (val.length < 6) {
+                                return 'Password must be at least 6 characters';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 28),
                           SizedBox(
