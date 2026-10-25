@@ -25,6 +25,7 @@ class ApiEndpoints {
 
   // Protected Admin Management
   static String get admin => '$baseUrl/admin';
+  static String get changePassword => '$admin/change-password';
   static String get adminProfile => '$admin/profile';
   static String get adminProjects => '$admin/projects';
   static String adminProjectById(int id) => '$adminProjects/$id';
