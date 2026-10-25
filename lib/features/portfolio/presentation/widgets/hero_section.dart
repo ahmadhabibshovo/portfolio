@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/icon_resolver.dart';
 import '../../../../core/utils/responsive.dart';
+import '../../../../core/widgets/app_shimmer.dart';
 import '../../domain/entities/profile_entity.dart';
 import '../../domain/entities/social_link_entity.dart';
 
@@ -93,7 +94,7 @@ class HeroSection extends StatelessWidget {
 
         // Headline
         Text(
-          "Hi, I'm ${profile.name} 👋",
+          "Hi, I'm ${profile.name}",
           textAlign: centered ? TextAlign.center : TextAlign.start,
           style: Theme.of(context).textTheme.displayLarge
               ?.copyWith(fontSize: centered ? 34 : 48),
@@ -252,6 +253,72 @@ class HeroSection extends StatelessWidget {
               : _buildFallbackAvatar(),
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatarImage() {
+    final avatar = profile.avatarUrl.trim();
+
+    if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+      return Image.network(
+        avatar,
+        fit: BoxFit.cover,
+        width: 250,
+        height: 250,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded || frame != null) {
+            return child;
+          }
+          return const AppShimmer(
+            child: ShimmerCircle(size: 250),
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const AppShimmer(
+            child: ShimmerCircle(size: 250),
+          );
+        },
+        errorBuilder: (_, _, _) => _buildLocalOrFallbackAvatar(),
+      );
+    }
+
+    if (avatar.startsWith('assets/')) {
+      return Image.asset(
+        avatar,
+        fit: BoxFit.cover,
+        width: 250,
+        height: 250,
+        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded || frame != null) {
+            return child;
+          }
+          return const AppShimmer(
+            child: ShimmerCircle(size: 250),
+          );
+        },
+        errorBuilder: (_, _, _) => _buildFallbackAvatar(),
+      );
+    }
+
+    return _buildLocalOrFallbackAvatar();
+  }
+
+  Widget _buildLocalOrFallbackAvatar() {
+    return Image.asset(
+      'assets/images/Habib.png',
+      fit: BoxFit.cover,
+      width: 250,
+      height: 250,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded || frame != null) {
+          return child;
+        }
+        return const AppShimmer(
+          child: ShimmerCircle(size: 250),
+        );
+      },
+      errorBuilder: (_, _, _) => _buildFallbackAvatar(),
     );
   }
 
