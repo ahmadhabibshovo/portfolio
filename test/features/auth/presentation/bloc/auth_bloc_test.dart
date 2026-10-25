@@ -115,7 +115,7 @@ void main() {
     authBloc.add(
       const LoginSubmittedEvent(
         email: 'admin@example.com',
-        password: 'AdminPassword123!',
+        password: 'TestPassword123!',
       ),
     );
   });

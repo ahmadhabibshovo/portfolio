@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../injection_container.dart';
 import '../../../../core/utils/icon_resolver.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
@@ -105,6 +108,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                   const FetchPortfolioDataEvent(),
                 );
               },
+            ),
+            IconButton(
+              icon: const Icon(Icons.lock_reset_rounded, color: AppColors.primary),
+              tooltip: 'Change Password',
+              onPressed: () => _showChangePasswordDialog(context),
             ),
             IconButton(
               icon: const Icon(Icons.logout_rounded, color: AppColors.error),
@@ -802,7 +810,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            'by ${b.author} | Status: ${b.status} | Rating: ${b.rating}â˜…',
+                            'by ${b.author} | Status: ${b.status} | Rating: ${b.rating}ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦',
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -1604,6 +1612,177 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
             child: const Text('Create'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final currentPassController = TextEditingController();
+    final newPassController = TextEditingController();
+    final confirmPassController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscureCurrent = true;
+    bool obscureNew = true;
+    bool isSubmitting = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Row(
+            children: [
+              Icon(Icons.security_rounded, color: AppColors.primary),
+              SizedBox(width: 10),
+              Text(
+                'Change Admin Password',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Update your admin credentials securely. You will need to sign in again after changing your password.',
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: currentPassController,
+                      obscureText: obscureCurrent,
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscureCurrent
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            size: 20,
+                          ),
+                          onPressed: () => setDialogState(
+                            () => obscureCurrent = !obscureCurrent,
+                          ),
+                        ),
+                      ),
+                      validator: (val) => (val == null || val.isEmpty)
+                          ? 'Current password is required'
+                          : null,
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: newPassController,
+                      obscureText: obscureNew,
+                      decoration: InputDecoration(
+                        labelText: 'New Password (min 8 chars)',
+                        prefixIcon: const Icon(Icons.vpn_key_outlined, size: 20),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscureNew
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            size: 20,
+                          ),
+                          onPressed: () => setDialogState(
+                            () => obscureNew = !obscureNew,
+                          ),
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'New password is required';
+                        }
+                        if (val.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (val == currentPassController.text) {
+                          return 'New password must be different';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: confirmPassController,
+                      obscureText: obscureNew,
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm New Password',
+                        prefixIcon: Icon(Icons.check_circle_outline, size: 20),
+                      ),
+                      validator: (val) {
+                        if (val != newPassController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isSubmitting ? null : () => Navigator.of(dialogCtx).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: isSubmitting
+                  ? null
+                  : () async {
+                      if (!(formKey.currentState?.validate() ?? false)) return;
+                      setDialogState(() => isSubmitting = true);
+                      try {
+                        final apiClient = sl<ApiClient>();
+                        await apiClient.post(
+                          ApiEndpoints.changePassword,
+                          data: {
+                            'current_password': currentPassController.text,
+                            'new_password': newPassController.text,
+                          },
+                        );
+                        if (!context.mounted) return;
+                        Navigator.of(dialogCtx).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: AppColors.success,
+                            content: Text(
+                              'Password updated successfully! Please sign in with your new password.',
+                            ),
+                          ),
+                        );
+                        context.read<AuthBloc>().add(LogoutRequestedEvent());
+                        widget.onLogout();
+                      } catch (e) {
+                        setDialogState(() => isSubmitting = false);
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: AppColors.error,
+                            content: Text(
+                              'Failed to change password: ${e.toString().replaceAll("Exception:", "").trim()}',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Change Password'),
+            ),
+          ],
+        ),
       ),
     );
   }
